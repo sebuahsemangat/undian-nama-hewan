@@ -82,7 +82,7 @@
             border-radius: 10px;
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
             text-align: left;
-            display: none;
+            display: none; /* Changed to none for initial visibility, can be changed to block if user wants to see it */
         }
         .animal-list-section h2 {
             font-size: 1.5rem;
@@ -107,13 +107,17 @@
             text-align: center;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
+        .footer {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1 class="text-3xl font-extrabold text-gray-800 mb-4">Pengundian Nama Hewan</h1>
 
-        <!-- The animal list section was commented out, causing the error. It's now uncommented. -->
         <div class="animal-list-section">
             <h2>Daftar Hewan:</h2>
             <ul id="animalListDisplay">
@@ -129,6 +133,11 @@
 
         <div id="resultBox" class="result-box">
             Tekan "Touch Me!" untuk mengundi hewan
+        </div>
+
+        <!-- Footer with copyright information -->
+        <div class="footer">
+            &copy; <span id="currentYear"></span> Apep Wahyudin | SMK Informatika Sumedang
         </div>
     </div>
 
@@ -147,7 +156,7 @@
         const drawButton = document.getElementById('drawButton');
         const loadingMessage = document.getElementById('loadingMessage');
         const resultBox = document.getElementById('resultBox');
-        const animalListDisplay = document.getElementById('animalListDisplay'); // This element was not found because it was commented out in HTML
+        const animalListDisplay = document.getElementById('animalListDisplay');
 
         // Function to shuffle an array (Fisher-Yates algorithm)
         function shuffleArray(array) {
@@ -166,7 +175,9 @@
             resultBox.textContent = "Tekan \"Touch Me!\" untuk mengundi hewan";
             drawButton.disabled = false;
             loadingMessage.classList.add('hidden');
-            populateAnimalListDisplay(); // This function was causing the error
+            populateAnimalListDisplay();
+            // Set current year in the footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
         }
 
         // Populate the initial list of animals on the page
