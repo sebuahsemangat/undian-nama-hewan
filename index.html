@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengundian Nama Hewan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .button {
+            background-image: linear-gradient(to right, #6366f1, #8b5cf6); /* Purple gradient */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+            outline: none;
+        }
+        .button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.6);
+        }
+        .button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
+        }
+        .button:disabled {
+            background-image: linear-gradient(to right, #a78bfa, #c4b5fd); /* Lighter purple when disabled */
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        .result-box {
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e0e7ff; /* Light blue */
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4338ca; /* Darker blue */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease;
+        }
+        .loading-text {
+            font-size: 1.2rem;
+            color: #6b7280; /* Gray */
+        }
+        .animal-list-section {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-align: left;
+            display: none;
+        }
+        .animal-list-section h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 15px;
+        }
+        .animal-list-section ul {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        .animal-list-section li {
+            background-color: #eff6ff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: #3b82f6;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-4">Pengundian Nama Hewan</h1>
+
+        <!-- The animal list section was commented out, causing the error. It's now uncommented. -->
+        <div class="animal-list-section">
+            <h2>Daftar Hewan:</h2>
+            <ul id="animalListDisplay">
+                <!-- Animal names will be populated here by JavaScript -->
+            </ul>
+        </div>
+
+        <button id="drawButton" class="button">Touch Me!</button>
+
+        <div id="loadingMessage" class="loading-text hidden">
+            Memuat...
+        </div>
+
+        <div id="resultBox" class="result-box">
+            Tekan "Touch Me!" untuk mengundi hewan
+        </div>
+    </div>
+
+    <script>
+        const animals = [
+            "Gajah", "Singa", "Jerapah", "Monyet", "Harimau",
+            "Kuda", "Kelinci", "Beruang", "Serigala", "Burung Hantu",
+            "Ular", "Buaya", "Paus", "Lumba-lumba", "Katak",
+            "Kura-kura", "Kanguru", "Panda", "Rusa", "Kelelawar",
+            "Rubah", "Zebra", "Gorila", "Kucing", "Anjing" // Added more to reach >20
+        ];
+
+        let shuffledAnimals = [];
+        let currentIndex = 0;
+
+        const drawButton = document.getElementById('drawButton');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const resultBox = document.getElementById('resultBox');
+        const animalListDisplay = document.getElementById('animalListDisplay'); // This element was not found because it was commented out in HTML
+
+        // Function to shuffle an array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+            }
+            return array;
+        }
+
+        // Initialize the game
+        function initializeGame() {
+            // Create a copy of the animals array and shuffle it
+            shuffledAnimals = shuffleArray([...animals]);
+            currentIndex = 0;
+            resultBox.textContent = "Tekan \"Touch Me!\" untuk mengundi hewan";
+            drawButton.disabled = false;
+            loadingMessage.classList.add('hidden');
+            populateAnimalListDisplay(); // This function was causing the error
+        }
+
+        // Populate the initial list of animals on the page
+        function populateAnimalListDisplay() {
+            // Check if animalListDisplay exists before trying to modify its innerHTML
+            if (animalListDisplay) {
+                animalListDisplay.innerHTML = ''; // Clear existing list
+                animals.forEach(animal => {
+                    const li = document.createElement('li');
+                    li.textContent = animal;
+                    animalListDisplay.appendChild(li);
+                });
+            } else {
+                console.error("Element with ID 'animalListDisplay' not found.");
+            }
+        }
+
+        // Function to handle the drawing of an animal
+        function drawAnimal() {
+            if (currentIndex >= shuffledAnimals.length) {
+                resultBox.textContent = "Semua hewan sudah diundi!";
+                drawButton.disabled = true;
+                return;
+            }
+
+            // Show loading message
+            loadingMessage.classList.remove('hidden');
+            resultBox.textContent = ""; // Clear previous result
+            drawButton.disabled = true; // Disable button during loading
+
+            setTimeout(() => {
+                // Hide loading message
+                loadingMessage.classList.add('hidden');
+
+                // Get the next animal
+                const animalName = shuffledAnimals[currentIndex];
+                resultBox.textContent = animalName;
+
+                // Mark the animal as used (optional, as we are using a shuffled list and incrementing index)
+                // For visual feedback, you could remove it from the displayed list or change its style
+                // (Not implemented here to keep the initial list visible)
+
+                currentIndex++; // Move to the next animal
+
+                // Re-enable the button if there are more animals
+                if (currentIndex < shuffledAnimals.length) {
+                    drawButton.disabled = false;
+                } else {
+                    drawButton.disabled = true; // All animals drawn
+                }
+            }, 3000); // 3-second delay
+        }
+
+        // Add event listener to the button
+        drawButton.addEventListener('click', drawAnimal);
+
+        // Initialize the game when the page loads
+        window.onload = initializeGame;
+
+    </script>
+</body>
+</html>
